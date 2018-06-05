@@ -1,4 +1,4 @@
-# GuitarTabScraper
+# UltimateGuitarTabs Scraper
 The following notebook scrapes the top 1000 most popular tabs posting on https://www.ultimate-guitar.com/
 
 After scraping, it stores the data found into a MySQL database ('UltimateGuitarTabs') with the following tables:
