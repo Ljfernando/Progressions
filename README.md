@@ -1,7 +1,9 @@
-# UltimateGuitarTabs Scraper
-The following notebook scrapes the top 1000 most popular tabs posting on https://www.ultimate-guitar.com/
+# UltimateGuitarTabs Analysis
+In this notebook we scrape the top 1000 most popular tabs posting on https://www.ultimate-guitar.com/
 
-After scraping, it stores the data found into a MySQL database ('UltimateGuitarTabs') with the following tables:
+We then analyze the chord progressions to find similar songs.
+
+The scraped data is stored into a MySQL database ('UltimateGuitarTabs') with the following tables:
 1. Tab_Data (id, song, artist, is_acoustic, tab_url)
     - id: Unique tab ID 
     - song: Name of song
