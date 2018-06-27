@@ -1,0 +1,8 @@
+How To RUN
+
+
+1. In cmd go to this drive.
+2. run command: pip install -r req.txt
+3. Run python code
+4. open index.html in browser
+5. click load
