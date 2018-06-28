@@ -1,7 +1,11 @@
 <div ng-controller="SimController">
 
+	<div class="jumbotron">
+		<h2>{{song.Song}} </h2>
+		<h4> {{song.Artist}}<h4>
+	</div>
     <table ng-table="simSongsTable" class="table" show-filters="true">
-        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=rowClick(x.Id)>
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simClick(x.Id) style="cursor:pointer">
         	<td title="'Rank'" filter="{ Rank: 'number'}" sortable="'Rank'" class="text-center">{{x.Rank}}</td>
             <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
             <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>
