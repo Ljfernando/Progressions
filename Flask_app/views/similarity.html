@@ -1,12 +1,13 @@
 <div ng-controller="SimController">
 
     <table ng-table="simSongsTable" class="table" show-filters="true">
-        <tr ng-repeat="x in $data track by x.id" id={{x.id}} ng-click=rowClick(x.id)>
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=rowClick(x.Id)>
+        	<td title="'Rank'" filter="{ Rank: 'number'}" sortable="'Rank'">{{x.Rank}}</td>
             <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
             <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>
-<!--             <td title="'Views'" filter="{ num_hits: 'number'}" sortable="'num_hits'">{{x.num_hits}}</td>
-            <td title="'Votes'" filter="{ votes: 'number'}" sortable="'votes'">{{x.votes}}</td>
-            <td title="'Rating'" filter="{ rating: 'number'}" sortable="'rating'">{{x.rating}}</td>
- -->
+            <td title="'Views'" filter="{ Num_hits: 'number'}" sortable="'Num_hits'">{{x.Num_hits}}</td>
+            <td title="'Votes'" filter="{ Votes: 'number'}" sortable="'Votes'">{{x.Votes}}</td>
+            <td title="'Rating'" filter="{ Rating: 'number'}" sortable="'Rating'">{{x.Rating}}</td>
+
       </table>
 </div>

@@ -49,29 +49,11 @@ app.controller("SimController", ['$scope','$http','$location','NgTableParams', f
     console.log('path',path)
     $http.get(path)
         .then(function(response){
-            console.log(response.data)
+            data=response.data;
+            console.log(data)
+            $scope.simSongsTable = new NgTableParams({
+            },{dataset : data})
         }, function(response){
             console.log("error")
-        })
-    $scope.simSongsTable = new NgTableParams({},{
-        dataset : [{id:0, Song:'Hello', Artist:'Adele'},
-                    {id:1, Song:'Yesterday', Artist:'Beatles'}]
     })
-    // var path= 'http://localhost:5000/';
-    // var data;
-    // $http.get(path)
-    //     .then(function(response){
-    //         data=response.data;
-    //         console.log(data)
-    //         $scope.songsTable = new NgTableParams({
-
-    //         },{dataset : data})
-    //     },function(response){
-    //         console.log("Error")
-    //     })
-
-
-    // $scope.rowClick = function(row_id){
-    //     $location.path('/similar-songs/'+row_id);
-    // }
 }]);

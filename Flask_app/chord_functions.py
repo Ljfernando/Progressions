@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+import math
 def fix_accidental(note, accidental):
     notes = np.asarray(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 
@@ -235,19 +238,24 @@ def write_states(states):
         db.rollback()
 
 def create_transition_mat(states, chords):
-    num_states = len(states)
-    trans_mat = np.zeros((num_states, num_states))
-    for i in range(1, len(chords)):
-        curr_chord = chords[i - 1]
-        curr_chord_idx = np.where(np.asarray(states) == curr_chord)[0][0]
-        
-        next_chord = chords[i]
-        next_chord_idx = np.where(np.asarray(states) == next_chord)[0][0]
-        trans_mat[curr_chord_idx, next_chord_idx] += 1
+    try:
+        num_states = len(states)
+        trans_mat = np.zeros((num_states, num_states))
+        # print(trans_mat)
+        for i in range(1, len(chords)):
+            curr_chord = chords[i - 1]
+            curr_chord_idx = np.where(np.asarray(states) == curr_chord)[0][0]
+            
+            next_chord = chords[i]
+            next_chord_idx = np.where(np.asarray(states) == next_chord)[0][0]
+            trans_mat[curr_chord_idx, next_chord_idx] += 1
 
-    row_sums = np.sum(trans_mat, axis = 1)
-    trans_mat = trans_mat/row_sums
-    return(np.nan_to_num(trans_mat))
+        row_sums = np.sum(trans_mat, axis = 1)
+        trans_mat = trans_mat/row_sums
+        return(np.nan_to_num(trans_mat))
+
+    except:
+        print("failed")
 
 def compute_euclidean(mat1, mat2):
     # Computes euclidean distance between two
@@ -256,20 +264,24 @@ def compute_euclidean(mat1, mat2):
     mat_dif = mat1 - mat2
     return(math.sqrt(np.sum(np.multiply(mat_dif, mat_dif)))/mat1.shape[0])
 
-def get_similar_songs(states, song_id, clean_chords):
-    curr_song = clean_chords.loc[clean_chords['id'] == song_id]
+def get_similar_songs(states, song_id, clean_chords, orig_chords):
+    curr_song = clean_chords.loc[clean_chords['Id'] == song_id]
     chords = curr_song.iat[0, 2].split(',')#[0,2] As it's just one song and chords at idx 2
     tm = create_transition_mat(states,chords)
     dist = [0]*clean_chords.shape[0]
     for i in range(len(dist)):
-        curr_tm = create_transition_mat(states,clean_chords['chords'][i].split(','))
+        curr_tm = create_transition_mat(states,clean_chords['Chords'][i].split(','))
         dist[i] = compute_euclidean(tm, curr_tm)
         
     dist_ord = np.argsort(dist) # Sorting by distance ascending
-    
-    idxs = np.unique(list(Chords['Song'][dist_ord]), return_index=True)[1] # Indexes of unique entries
-    # np.unique() automatically sorts, so we must resort by distance
-    sim_songs = Chords.iloc[dist_ord[sorted(idxs)]]
+    idxs = np.unique(list(orig_chords['Song'][dist_ord]), return_index=True)[1] # Indexes of unique entries
+    sim_songs = orig_chords.iloc[dist_ord[sorted(idxs)]]
+
+    # Creating ranking column
+    sim_songs = sim_songs.reset_index()
+    # print(pd.Series(range(1,sim_songs.shape[0],1)))
+    sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
+    # print(sim_songs)
     return(sim_songs)
 
 

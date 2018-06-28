@@ -12,8 +12,10 @@ app = Flask(__name__)
 CORS(app)
 
 main_query = "SELECT Chords.id, Song, Artist, Tonality, Capo, Chords, num_hits, votes, rating FROM Chords INNER JOIN Hits ON Chords.id = Hits.id"
-Chords = pd.DataFrame(list(exe_query(main_query)), columns=['id', 'Song', 'Artist', 'Key', 'Capo', 'Chords', 'num_hits', 'votes', 'rating'])
-print(Chords.dtypes)
+Chords = pd.DataFrame(list(exe_query(main_query)), columns=['Id', 'Song', 'Artist', 'Key', 'Capo', 'Chords', 'Num_hits', 'Votes', 'Rating'])
+Clean_Chords = pd.DataFrame(list(get_table('Clean_Chords')), columns=['Id','Orig_key', 'Chords'])
+states = get_table('States')[0][0].split(',')
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if request.method == 'GET':
@@ -28,10 +30,11 @@ def get_similar(song_id):
 	if request.method == 'GET':
 		query = request.args.get("q")
 		try:
-			print(song_id)
-			return (Chords.to_json(orient='records'))
+			sim_df = get_similar_songs(states, int(song_id), Clean_Chords, Chords)
+			# print(sim_df)
+			return (sim_df.to_json(orient='records'))
 		except:
-			return "Error ocuured!"
+			return "Error occurred!"
 if __name__ == '__main__':
   app.run( 
 	host="0.0.0.0",
