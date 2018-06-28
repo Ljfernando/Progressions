@@ -141,7 +141,7 @@ def compute_key(Key_dict, Keys, chords):
     computed_key = Keys[np.argmax(np.sum(count_mat, axis = 1))]
     return(computed_key, chords)
     
-def transpose_C(Key_dict, Keys, chords, states):
+def transpose_C(Key_dict, Keys, chords, states, song_id):
     notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     comp_key, chords = compute_key(Key_dict, Keys, chords)
     
@@ -176,7 +176,8 @@ def transpose_C(Key_dict, Keys, chords, states):
                 new_chords[i] = notes[new_chord_idx]
             states.add(new_chords[i])
         return(states, \
-               {'orig_key': comp_key, \
+               {'song_id' : song_id, \
+                'orig_key': comp_key, \
                 'trans_chords': new_chords})
 def get_songs():
     Key_dict, Keys = get_key_tbls()
@@ -184,7 +185,7 @@ def get_songs():
     songs = [""]*Chords.shape[0]
     states = set()
     for i in range(Chords.shape[0]):
-        states, songs[i] = transpose_C(Key_dict, Keys, Chords['Chords'][i], states)
+        states, songs[i] = transpose_C(Key_dict, Keys, Chords['Chords'][i], states, Chords['id'][i])
     states = sorted(list(states))
     return(states, songs)
 
