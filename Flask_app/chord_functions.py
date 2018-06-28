@@ -150,7 +150,8 @@ def transpose_C(Key_dict, Keys, chords, states, song_id):
         for chord in chords:
             states.add(chord)
         return(states, \
-               {'orig_key': comp_key, \
+               {'song_id' : song_id, \
+                'orig_key': comp_key, \
                 'trans_chords': chords})
     else:
         steps = np.where(np.asarray(notes) == comp_key)[0][0]
@@ -189,6 +190,50 @@ def get_songs():
     states = sorted(list(states))
     return(states, songs)
 
+def write_clean_songs(songs):
+    db = connect_to_database()
+    cur = db.cursor()
+    
+    delete = "DROP TABLE IF EXISTS Clean_Chords;"
+    cur.execute(delete)
+    
+    create = "CREATE TABLE Clean_Chords (id INT(11) NOT NULL PRIMARY KEY, orig_key TEXT(5), chords TEXT(500));"
+    cur.execute(create)
+    
+    for i in range(len(songs)):
+        
+        song = songs[i]
+        song_id = int(song['song_id'])
+        orig_key = song['orig_key']
+        chords = ','.join(song['trans_chords'])
+        
+        sql_tab = "INSERT INTO Clean_Chords (id,orig_key,chords) \
+        VALUES ('%d','%s','%s')" % \
+        (song_id, orig_key, chords) 
+        
+        try:
+            cur.execute(sql_tab)
+            db.commit()
+        except:
+            db.rollback()
+
+def write_states(states):
+    db = connect_to_database()
+    cur = db.cursor()
+    delete = "DROP TABLE IF EXISTS States;"
+    cur.execute(delete)
+    
+    create = "CREATE TABLE States (states TEXT(500));"
+    cur.execute(create_tabs)
+    
+    sql_tab = "INSERT INTO States (states) VALUES ('%s')" % \
+        ','.join(states)
+    try:
+        cur.execute(sql_tab)
+        db.commit()
+    except:
+        db.rollback()
+
 def create_transition_mat(states, chords):
     num_states = len(states)
     trans_mat = np.zeros((num_states, num_states))
@@ -211,11 +256,13 @@ def compute_euclidean(mat1, mat2):
     mat_dif = mat1 - mat2
     return(math.sqrt(np.sum(np.multiply(mat_dif, mat_dif)))/mat1.shape[0])
 
-def get_similar_songs(states, chords, all_songs):
+def get_similar_songs(states, song_id, clean_chords):
+    curr_song = clean_chords.loc[clean_chords['id'] == song_id]
+    chords = curr_song.iat[0, 2].split(',')#[0,2] As it's just one song and chords at idx 2
     tm = create_transition_mat(states,chords)
-    dist = [0]*len(all_songs)
-    for i in range(len(all_songs)):
-        curr_tm = create_transition_mat(states,all_songs[i]['trans_chords'])
+    dist = [0]*clean_chords.shape[0]
+    for i in range(len(dist)):
+        curr_tm = create_transition_mat(states,clean_chords['chords'][i].split(','))
         dist[i] = compute_euclidean(tm, curr_tm)
         
     dist_ord = np.argsort(dist) # Sorting by distance ascending
@@ -224,3 +271,5 @@ def get_similar_songs(states, chords, all_songs):
     # np.unique() automatically sorts, so we must resort by distance
     sim_songs = Chords.iloc[dist_ord[sorted(idxs)]]
     return(sim_songs)
+
+
