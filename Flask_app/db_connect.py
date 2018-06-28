@@ -31,3 +31,11 @@ def get_table(tableName):
     cur.execute("SELECT * FROM "+tableName)
     
     return(cur.fetchall())
+
+def exe_query(query):
+    db = connect_to_database()
+    cur = db.cursor()
+
+    cur.execute(query)
+
+    return(cur.fetchall())

@@ -156,13 +156,24 @@ def transpose_C(Key_dict, Keys, chords, states):
         steps = np.where(np.asarray(notes) == comp_key)[0][0]
         for i in range(len(chords)):
             is_min = False
+            is_dim = False
             curr_chord = chords[i]
             if curr_chord[-1] == 'm':
-                is_min = True
-                curr_chord = curr_chord[0:-1]
+                if curr_chord[-3:len(curr_chord)] == 'dim':
+                    is_dim = True
+                    curr_chord = curr_chord[0:-3]
+                else:
+                    is_min = True
+                    curr_chord = curr_chord[0:-1]
+            
             chord_idx = np.where(np.asarray(notes) == curr_chord)[0][0]
             new_chord_idx = chord_idx - steps
-            new_chords[i] = notes[new_chord_idx] + 'm' if is_min else notes[new_chord_idx]
+            if is_min:
+                new_chords[i] = notes[new_chord_idx] + 'm'
+            elif is_dim:
+                new_chords[i] = notes[new_chord_idx] + 'dim'
+            else:
+                new_chords[i] = notes[new_chord_idx]
             states.add(new_chords[i])
         return(states, \
                {'orig_key': comp_key, \
@@ -210,5 +221,5 @@ def get_similar_songs(states, chords, all_songs):
     
     idxs = np.unique(list(Chords['Song'][dist_ord]), return_index=True)[1] # Indexes of unique entries
     # np.unique() automatically sorts, so we must resort by distance
-    sim_songs = list(Chords['Song'][dist_ord[sorted(idxs)]])
+    sim_songs = Chords.iloc[dist_ord[sorted(idxs)]]
     return(sim_songs)
