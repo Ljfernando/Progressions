@@ -1,6 +1,6 @@
 <div ng-controller="MainController">
     <table ng-table="songsTable" class="table" show-filters="true">
-        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=rowClick(x.Id)>
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=rowClick(x.Id) style="cursor: pointer">
             <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
             <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>
             <td title="'Views'" filter="{ Num_hits: 'number'}" sortable="'Num_hits'">{{x.Num_hits}}</td>
