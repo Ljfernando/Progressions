@@ -46,18 +46,26 @@ Once we have the key for each song, we simply shift all the chords by n-half-ste
 
 ## Installation 
 The UltimateGuitarTabs must first be stored in a mysql database. To do so, ensure you have MySQL installed on your machine. Then you can dump the Progressions/data/UltimateGuitarTabs.sql file into mysql with the following command:
-<li> mysqldump -u root -p UltimateGuitarTabs < UltimateGuitarTabs.sql</li>
+'''mysqldump -u root -p UltimateGuitarTabs < UltimateGuitarTabs.sql'''
+
 Or you can start mysql in your terminal and execute the command:
-<li> source [full path to UltimateGuitarTabs.sql]</li>
+'''source [full path to UltimateGuitarTabs.sql]'''
+
 Next enter the correct directory in the project:
-<li> cd Progressions/Flask_app </li>
+'''cd Progressions/Flask_app'''
+
 Install python packages
-<li> pip install -r req.txt </li>
+'''pip install -r req.txt'''
+
 Run flask app
-<li> python daemon.py </li>
+'''python daemon.py'''
+
 Something like this should show up:
- * Debug mode: off
- * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-Finally you can open up the index.html file or start up your own server to run the app. I run my code on Sublime and usually start up a Sublime Server to run the app.
+
+* Debug mode: off
+
+* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+
+Finally you can open up the index.html file in your browser or start up your own server to run the app. I run my code on Sublime and usually start up a Sublime Server to run the app.
 
 
