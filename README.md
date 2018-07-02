@@ -1,8 +1,8 @@
 # Progressions
-<i>Progressions</i> is a web-app the allows a user to find similar songs based on their chord progressions. You can either click on a given song or type in your own chord progression to find other similar songs. 
+<i>Progressions</i> is a web-app that allows you to find songs that are similar based on their chord progressions. Users can either click on a given song or type in their own chord progression to find other similar songs. 
 
 ## Chord Progression Similarity
-Since music is temporal by nature, we treat each song as a stochastic process. In particular, we use markov chains to create transition matrices for each song, where chord names represent a state. For simplicity, we stuck with a 1st-order markov chain, though music itself requires higher or variable order models to truly highlight patterns. 
+Music is temporal by nature. This gives us the ability to treat each song as a stochastic process. A simple approach is to use [markov chains](https://en.wikipedia.org/wiki/Markov_chain) to create transition matrices for each song, where chord names represent a state. In this app we stick with a 1st-order markov chain, though a better approach may require higher or variable order models to truly highlight musical patterns. 
 
 When a user clicks on a song, we calculate the euclidean distance of the respective transition matrix to all other songs within our dataset. Songs with smaller outcomes are ranked in ascending order and displayed on the web-app. The process is the same for when a user types in a chord progression.
 
@@ -81,3 +81,10 @@ Something like this should show up:
 Finally you can open up the index.html file in your browser or start up your own server to run the app. I run my code on Sublime and usually start up a Sublime Server to run the app.
 
 
+## Future Work
+
+- As we said before, 1st-order Markov Chains are a basic approach to modeling the sequence of a chord progression. Therefore, using higher-order or variable-order Markov models may improve the application.
+
+- Our approach to finding the key was a basic music theoretic technique. Other novel approaches that use signal processing techniques or hidden-markov models to classify song keys have been used but may not be appropriate for this dataset. More research into the field of Music Information Retrieval (MIR) is needed.
+
+- Other distance metrics besides Euclidean can be used. Using a metric like Kullback-Leibler (KL)divergence is an option to compare probability distributions might. Our use of a transition matrix (TM) makes this complicated as we can calculate a KL-divergence rows of songs but not as a whole. Moreover, the efficacy of any distance matrix relies on our modelling approach, which in this case is a simple 1st-order Markov Chain. 
