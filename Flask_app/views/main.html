@@ -1,10 +1,17 @@
 <div ng-controller="MainController">
 	<div class="jumbotron">
-		<h1>Welcome!</h1>
-		<p>Click a song to find ones that have similar chord progressions</p>
+		<h1>Welcome to <i>Progressions</i></h1>
+		<p>Click on a song or type in a chord progression to find similar songs!</p>
 	</div>
+    <form>
+        <div class="form-group">
+            <textarea ng-model="chordText" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter a chord progression without spaces and split by commas (i.e., C,G,Am,F,C)."></textarea>
+        </div>
+        <button type="submit" ng-click="simChords(chordText)" class="btn btn-default">Submit</button>
+
+    </form>
     <table ng-table="songsTable" class="table" show-filters="true">
-        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simClick(x.Id) style="cursor:pointer">
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simSong(x.Id) style="cursor:pointer">
             <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
             <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>
             <td title="'Views'" filter="{ Num_hits: 'number'}" sortable="'Num_hits'">{{x.Num_hits}}</td>

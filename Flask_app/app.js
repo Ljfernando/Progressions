@@ -7,8 +7,11 @@ app.config(function($routeProvider) {
     .when("/", {
         templateUrl : "views/main.html"
     })
-    .when("/similar-songs/:id", {
-        templateUrl : "views/similarity.html"
+    .when("/sim-by-song/:id", {
+        templateUrl : "views/simBySong.html"
+    })
+    .when("/sim-by-prog/:chords", {
+        templateUrl : "views/simByProg.html"
     })
     .when("/song/:id", {
         templateUrl : "views/song.html"
@@ -37,30 +40,61 @@ app.controller("MainController", ['$scope','$http','$location','NgTableParams', 
         })
 
 
-    $scope.simClick = function(row_id){
-        $location.path('/similar-songs/'+row_id);
+    $scope.simSong = function(row_id){
+        $location.path('/sim-by-song/'+row_id);
+    }
+    $scope.simChords = function(chords){
+        $scope.chords = chords;
+        $location.path('/sim-by-prog/'+chords);
     }
 }]);
 
-app.controller("SimController", ['$scope','$http','$location','NgTableParams', function ($scope,$http,$location,NgTableParams) {
+app.controller("SimSongCtrlr", ['$scope','$http','$location','NgTableParams', function ($scope,$http,$location,NgTableParams) {
 
+    // console.log('chords', $scope.chords)
     // console.log('location', $location.$$path)
     var path ='http://localhost:5000' + $location.$$path
     $scope.path = path
-    console.log('path',path)
     $http.get(path)
         .then(function(response){
-            data=response.data;
-
-            $scope.song = data[0]
+            data=response.data.slice(1,response.data.length);
+            $scope.song = response.data[0]
+            
             $scope.simSongsTable = new NgTableParams({
             },{dataset : data})
         }, function(response){
             console.log("error")
     })
 
-    $scope.simClick = function(row_id){
-    $location.path('/similar-songs/'+row_id);
+    $scope.simSong = function(song){
+        $location.path('/sim-by-song/'+song);
+    }
+
+}]);
+
+app.controller("SimProgCtrlr", ['$scope','$http','$location','NgTableParams', function ($scope,$http,$location,NgTableParams) {
+
+    // console.log('chords', $scope.chords)
+    // console.log('location', $location.$$path)
+    var path ='http://localhost:5000' + $location.$$path
+    $scope.path = path
+    chords = $location.$$path.slice(13,$location.$$path.length)
+    if(chords.length > 50){
+        $scope.chords = chords.slice(0,50) + " ..."
+    }else{
+        $scope.chords = chords
+    }
+    $http.get(path)
+        .then(function(response){
+            data=response.data;
+            $scope.simSongsTable = new NgTableParams({
+            },{dataset : data})
+        }, function(response){
+            console.log("error")
+    })
+
+    $scope.simSong = function(song){
+        $location.path('/sim-by-song/'+song);
     }
 
 }]);

@@ -25,16 +25,28 @@ def index():
 		except:
 			return "Error ocuured!"
 
-@app.route('/similar-songs/<song_id>', methods=['POST','GET'])
-def get_similar(song_id):
+@app.route('/sim-by-song/<song_id>', methods=['POST','GET'])
+def get_similar_song(song_id):
 	if request.method == 'GET':
 		query = request.args.get("q")
 		try:
 			sim_df = get_similar_songs(states, int(song_id), Clean_Chords, Chords)
-			# print(sim_df)
 			return (sim_df.to_json(orient='records'))
 		except:
 			return "Error occurred!"
+
+@app.route('/sim-by-prog/<chords>', methods=['POST','GET'])
+def get_similar_chords(chords):
+	if request.method == 'GET':
+		query = request.args.get("q")
+		try:
+			sim_df = get_similar_songs2(states, chords, Clean_Chords, Chords)
+			sim_df = sim_df.to_json(orient='records')
+			# sim_df[len(sim_df)] = chords
+			return (sim_df)
+		except:
+			return "Error occurred!"
+
 if __name__ == '__main__':
   app.run( 
 	host="0.0.0.0",

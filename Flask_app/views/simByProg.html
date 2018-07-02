@@ -1,0 +1,24 @@
+<div ng-controller="SimProgCtrlr">
+
+	<div class="jumbotron">
+        <h2>Songs similar to your progression</h2>
+	</div>
+    <form>
+    <div class="form-group">
+        <textarea ng-model="chordText" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="{{chords}}"></textarea>
+    </div>
+    <button type="submit" ng-click="simChords(chordText)" class="btn btn-default">Submit</button>
+
+</form>
+
+    <table ng-table="simSongsTable" class="table" show-filters="true">
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simSong(x.Id) style="cursor:pointer">
+        	<td title="'Rank'" filter="{ Rank: 'number'}" sortable="'Rank'" class="text-center">{{x.Rank}}</td>
+            <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
+            <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>
+            <td title="'Views'" filter="{ Num_hits: 'number'}" sortable="'Num_hits'" class="text-center">{{x.Num_hits}}</td>
+            <td title="'Votes'" filter="{ Votes: 'number'}" sortable="'Votes'" class="text-center">{{x.Votes}}</td>
+            <td title="'Rating'" filter="{ Rating: 'number'}" sortable="'Rating'" class="text-center">{{x.Rating}}</td>
+
+      </table>
+</div>

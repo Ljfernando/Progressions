@@ -1,11 +1,18 @@
-<div ng-controller="SimController">
+<div ng-controller="SimSongCtrlr">
 
 	<div class="jumbotron">
 		<h2>{{song.Song}} </h2>
 		<h4> {{song.Artist}}<h4>
 	</div>
+<!--     <form>
+        <div class="form-group">
+            <textarea ng-model="chordText" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter a chord progression"></textarea>
+        </div>
+        <button type="submit" ng-click="simChords(chordText)" class="btn btn-default">Submit</button>
+    </form> -->
+
     <table ng-table="simSongsTable" class="table" show-filters="true">
-        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simClick(x.Id) style="cursor:pointer">
+        <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simSong(x.Id) style="cursor:pointer">
         	<td title="'Rank'" filter="{ Rank: 'number'}" sortable="'Rank'" class="text-center">{{x.Rank}}</td>
             <td title="'Song'" filter="{ Song: 'text'}" sortable="'Song'">{{x.Song}}</td>
             <td title="'Artist'" filter="{ Artist: 'text'}" sortable="'Artist'">{{x.Artist}}</td>

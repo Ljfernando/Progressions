@@ -279,9 +279,25 @@ def get_similar_songs(states, song_id, clean_chords, orig_chords):
 
     # Creating ranking column
     sim_songs = sim_songs.reset_index()
-    # print(pd.Series(range(1,sim_songs.shape[0],1)))
-    sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
-    # print(sim_songs)
+    sim_songs['Rank'] = pd.Series(range(0,sim_songs.shape[0]))
     return(sim_songs)
+
+def get_similar_songs2(states, chords, clean_chords, orig_chords):
+    chords = chords.split(',')
+    tm = create_transition_mat(states,chords)
+    dist = [0]*clean_chords.shape[0]
+    for i in range(len(dist)):
+        curr_tm = create_transition_mat(states,clean_chords['Chords'][i].split(','))
+        dist[i] = compute_euclidean(tm, curr_tm)
+        
+    dist_ord = np.argsort(dist) # Sorting by distance ascending
+    idxs = np.unique(list(orig_chords['Song'][dist_ord]), return_index=True)[1] # Indexes of unique entries
+    sim_songs = orig_chords.iloc[dist_ord[sorted(idxs)]]
+
+    # Creating ranking column
+    sim_songs = sim_songs.reset_index()
+    sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
+    return(sim_songs)
+
 
 
