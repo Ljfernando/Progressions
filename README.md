@@ -52,7 +52,7 @@ Or you can start mysql in your terminal and execute the command:
 Next enter the correct directory in the project:
 <li> cd Progressions/Flask_app </li>
 Install python packages
-<li> pip install -r requirements.txt </li>
+<li> pip install -r req.txt </li>
 Run flask app
 <li> python daemon.py </li>
 Something like this should show up:
