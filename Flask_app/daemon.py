@@ -31,7 +31,8 @@ def get_similar_song(song_id):
 		query = request.args.get("q")
 		try:
 			sim_df = get_similar_songs(states, int(song_id), Clean_Chords, Chords)
-			return (sim_df.to_json(orient='records'))
+			sim_json = sim_df.to_json(orient='records')
+			return ('{"dataset":' + sim_json + ',"links":' + get_song_links(song_id) + '}')
 		except:
 			return "Error occurred!"
 
@@ -42,7 +43,6 @@ def get_similar_chords(chords):
 		try:
 			sim_df = get_similar_songs2(states, chords, Clean_Chords, Chords)
 			sim_df = sim_df.to_json(orient='records')
-			# sim_df[len(sim_df)] = chords
 			return (sim_df)
 		except:
 			return "Error occurred!"

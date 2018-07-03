@@ -57,11 +57,14 @@ app.controller("SimSongCtrlr", ['$scope','$http','$location','NgTableParams', fu
     $scope.path = path
     $http.get(path)
         .then(function(response){
-            data=response.data.slice(1,response.data.length);
-            $scope.song = response.data[0]
+            data=response.data.dataset.slice(1,response.data.dataset.length - 1);
+            $scope.song = response.data.dataset[0]
             
             $scope.simSongsTable = new NgTableParams({
             },{dataset : data})
+
+            $scope.links = response.data.links
+            console.log('links', $scope.links)
         }, function(response){
             console.log("error")
     })

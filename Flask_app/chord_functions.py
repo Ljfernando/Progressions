@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import math
+from db_connect import *
+
 def fix_accidental(note, accidental):
     notes = np.asarray(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 
@@ -299,5 +301,16 @@ def get_similar_songs2(states, chords, clean_chords, orig_chords):
     sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
     return(sim_songs)
 
+def get_song_links(song_id):
+    query = 'SELECT song, artist FROM Chords WHERE id=' + song_id
+    song = exe_query(query)
+    name = song[0][0]
+    artist = song[0][1]
+
+    query = "SELECT id, tab_url FROM Tab_data WHERE song='" + name + "' AND artist='" + artist + "'"
+    Tab_data = pd.DataFrame(list(exe_query(query)), columns=['Id', 'Url'])
+    # print(Tab_data)
+    return(Tab_data.to_json(orient='records'))
+    # links = orig_chords['']
 
 

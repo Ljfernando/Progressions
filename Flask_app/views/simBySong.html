@@ -3,13 +3,10 @@
 	<div class="jumbotron">
 		<h2>{{song.Song}} </h2>
 		<h4> {{song.Artist}}<h4>
-	</div>
-<!--     <form>
-        <div class="form-group">
-            <textarea ng-model="chordText" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter a chord progression"></textarea>
+        <div ng-repeat="link in links">
+            <h6><a href={{link.Url}} target="_blank">Tab{{$index + 1}}</a></h6>
         </div>
-        <button type="submit" ng-click="simChords(chordText)" class="btn btn-default">Submit</button>
-    </form> -->
+	</div>
 
     <table ng-table="simSongsTable" class="table" show-filters="true">
         <tr ng-repeat="x in $data track by x.Id" id={{x.Id}} ng-click=simSong(x.Id) style="cursor:pointer">
