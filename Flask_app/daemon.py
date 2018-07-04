@@ -14,7 +14,7 @@ CORS(app)
 main_query = "SELECT Chords.id, Song, Artist, Tonality, Capo, Chords, num_hits, votes, rating FROM Chords INNER JOIN Hits ON Chords.id = Hits.id"
 Chords = pd.DataFrame(list(exe_query(main_query)), columns=['Id', 'Song', 'Artist', 'Key', 'Capo', 'Chords', 'Num_hits', 'Votes', 'Rating'])
 Clean_Chords = pd.DataFrame(list(get_table('Clean_Chords')), columns=['Id','Orig_key', 'Chords'])
-states = get_table('States')[0][0].split(',')
+states = set(get_table('States')[0][0].split(','))
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -31,8 +31,7 @@ def get_similar_song(song_id):
 		query = request.args.get("q")
 		try:
 			sim_df = get_similar_songs(states, int(song_id), Clean_Chords, Chords)
-			sim_json = sim_df.to_json(orient='records')
-			return ('{"dataset":' + sim_json + ',"links":' + get_song_links(song_id) + '}')
+			return ('{"dataset":' + sim_df + ',"links":' + get_song_links(song_id) + '}')
 		except:
 			return "Error occurred!"
 
@@ -41,9 +40,8 @@ def get_similar_chords(chords):
 	if request.method == 'GET':
 		query = request.args.get("q")
 		try:
-			sim_df = get_similar_songs2(states, chords, Clean_Chords, Chords)
-			sim_df = sim_df.to_json(orient='records')
-			return (sim_df)
+			sim_df, comp_key = get_similar_songs2(states, chords, Clean_Chords, Chords)
+			return ('{"dataset":' + sim_df + ',"comp_key":"' + comp_key + '"}')
 		except:
 			return "Error occurred!"
 

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import math
+import re
 from db_connect import *
 
 def fix_accidental(note, accidental):
@@ -48,6 +49,7 @@ def clean_chords(chords):
     prog2 = re.compile(pattern2)
 
     chords = chords.split(',')
+
     new_chords = [""]*len(chords)
     for i in range(len(chords)):
         curr_chord = chords[i]
@@ -58,7 +60,7 @@ def clean_chords(chords):
         groups = prog2.findall(no_num)[0]
         note,accidental = fix_accidental(groups[0], groups[1])
         new_chords[i] = note + accidental + groups[2] + groups[3]
-        
+
     return(new_chords)
 
 
@@ -116,7 +118,7 @@ def is_rel_min(comp_key, act_key):
     if notes[rel_min_idx] + 'm' == act_key:
         return(True)
 
-def compute_key(Key_dict, Keys, chords):
+def compute_key(chords):
     """
     Computes the key of a song by analyzing
     the chords used within the song. A theoretical
@@ -136,9 +138,11 @@ def compute_key(Key_dict, Keys, chords):
         - The computed key
         - List of cleaned chords, only major or minor
     """
+
+    Key_dict, Keys = get_key_tbls() # Grabbing key dictionary and keys
+
     chords = clean_chords(chords)
     count_mat = np.zeros((12,7)) # Matrix of zeros to tabulate chord occurences
-    start_chord = chords[0]
     # Tabulating chords
     for chord in chords:
         count_mat[Key_dict[chord]] += 1
@@ -146,10 +150,9 @@ def compute_key(Key_dict, Keys, chords):
     computed_key = Keys[np.argmax(np.sum(count_mat, axis = 1))]
     return(computed_key, chords)
     
-def transpose_C(Key_dict, Keys, chords, states, song_id):
+def transpose_C(chords, states, song_id):
     notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    comp_key, chords = compute_key(Key_dict, Keys, chords)
-    
+    comp_key, chords = compute_key(chords)
     new_chords = [""]*len(chords) # Empty list for new chords
     if comp_key == 'C':
         for chord in chords:
@@ -186,12 +189,11 @@ def transpose_C(Key_dict, Keys, chords, states, song_id):
                 'orig_key': comp_key, \
                 'trans_chords': new_chords})
 def get_songs():
-    Key_dict, Keys = get_key_tbls()
 
     songs = [""]*Chords.shape[0]
     states = set()
     for i in range(Chords.shape[0]):
-        states, songs[i] = transpose_C(Key_dict, Keys, Chords['Chords'][i], states, Chords['id'][i])
+        states, songs[i] = transpose_C(Chords['Chords'][i], states, Chords['id'][i])
     states = sorted(list(states))
     return(states, songs)
 
@@ -240,10 +242,10 @@ def write_states(states):
         db.rollback()
 
 def create_transition_mat(states, chords):
+    states = list(states) # Ensuring states is a list 
     try:
         num_states = len(states)
         trans_mat = np.zeros((num_states, num_states))
-        # print(trans_mat)
         for i in range(1, len(chords)):
             curr_chord = chords[i - 1]
             curr_chord_idx = np.where(np.asarray(states) == curr_chord)[0][0]
@@ -282,12 +284,13 @@ def get_similar_songs(states, song_id, clean_chords, orig_chords):
     # Creating ranking column
     sim_songs = sim_songs.reset_index()
     sim_songs['Rank'] = pd.Series(range(0,sim_songs.shape[0]))
-    return(sim_songs)
+    return(sim_songs.to_json(orient='records'))
 
 def get_similar_songs2(states, chords, clean_chords, orig_chords):
-    chords = chords.split(',')
-    tm = create_transition_mat(states,chords)
+    states, song = transpose_C(chords, states, 0)
+    tm = create_transition_mat(states,song['trans_chords'])
     dist = [0]*clean_chords.shape[0]
+
     for i in range(len(dist)):
         curr_tm = create_transition_mat(states,clean_chords['Chords'][i].split(','))
         dist[i] = compute_euclidean(tm, curr_tm)
@@ -299,7 +302,7 @@ def get_similar_songs2(states, chords, clean_chords, orig_chords):
     # Creating ranking column
     sim_songs = sim_songs.reset_index()
     sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
-    return(sim_songs)
+    return(sim_songs.to_json(orient='records'), song['orig_key'])
 
 def get_song_links(song_id):
     query = 'SELECT song, artist FROM Chords WHERE id=' + song_id
@@ -309,7 +312,6 @@ def get_song_links(song_id):
 
     query = "SELECT id, tab_url FROM Tab_data WHERE song='" + name + "' AND artist='" + artist + "'"
     Tab_data = pd.DataFrame(list(exe_query(query)), columns=['Id', 'Url'])
-    # print(Tab_data)
     return(Tab_data.to_json(orient='records'))
     # links = orig_chords['']
 

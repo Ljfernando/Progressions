@@ -89,7 +89,8 @@ app.controller("SimProgCtrlr", ['$scope','$http','$location','NgTableParams', fu
     }
     $http.get(path)
         .then(function(response){
-            data=response.data;
+            data=response.data.dataset;
+            $scope.comp_key = response.data.comp_key
             $scope.simSongsTable = new NgTableParams({
             },{dataset : data})
         }, function(response){
