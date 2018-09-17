@@ -7,13 +7,13 @@ app.config(function($routeProvider) {
     .when("/", {
         templateUrl : "views/main.html"
     })
-    .when("/sim-by-song/:id", {
+    .when("/sim-by-song?:id", {
         templateUrl : "views/simBySong.html"
     })
-    .when("/sim-by-prog/:chords", {
+    .when("/sim-by-prog?:chords", {
         templateUrl : "views/simByProg.html"
     })
-    .when("/song/:id", {
+    .when("/song?:id", {
         templateUrl : "views/song.html"
     })
 
@@ -41,11 +41,11 @@ app.controller("MainController", ['$scope','$http','$location','NgTableParams', 
 
 
     $scope.simSong = function(row_id){
-        $location.path('/sim-by-song/'+row_id);
+        $location.path('/sim-by-song?songid='+row_id);
     }
     $scope.simChords = function(chords){
         $scope.chords = chords;
-        $location.path('/sim-by-prog/'+chords);
+        $location.path('/sim-by-prog?chords='+chords);
     }
 }]);
 
@@ -70,7 +70,7 @@ app.controller("SimSongCtrlr", ['$scope','$http','$location','NgTableParams', fu
     })
 
     $scope.simSong = function(song){
-        $location.path('/sim-by-song/'+song);
+        $location.path('/sim-by-song?songid='+song);
     }
 
 }]);
@@ -98,7 +98,7 @@ app.controller("SimProgCtrlr", ['$scope','$http','$location','NgTableParams', fu
     })
 
     $scope.simSong = function(song){
-        $location.path('/sim-by-song/'+song);
+        $location.path('/sim-by-song?songid='+song);
     }
 
 }]);

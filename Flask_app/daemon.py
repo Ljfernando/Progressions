@@ -23,22 +23,22 @@ def index():
 		try:
 			return (Chords.to_json(orient='records'))
 		except:
-			return "Error ocuured!"
+			return "Error occurred!"
 
-@app.route('/sim-by-song/<song_id>', methods=['POST','GET'])
-def get_similar_song(song_id):
+@app.route('/sim-by-song', methods=['POST','GET'])
+def get_similar_song():
 	if request.method == 'GET':
-		query = request.args.get("q")
+		song_id = request.args.get("songid")
 		try:
 			sim_df = get_similar_songs(states, int(song_id), Clean_Chords, Chords)
 			return ('{"dataset":' + sim_df + ',"links":' + get_song_links(song_id) + '}')
 		except:
 			return "Error occurred!"
 
-@app.route('/sim-by-prog/<chords>', methods=['POST','GET'])
-def get_similar_chords(chords):
+@app.route('/sim-by-prog', methods=['POST','GET'])
+def get_similar_chords():
 	if request.method == 'GET':
-		query = request.args.get("q")
+		chords = request.args.get("chords")
 		try:
 			sim_df, comp_key = get_similar_songs2(states, chords, Clean_Chords, Chords)
 			return ('{"dataset":' + sim_df + ',"comp_key":"' + comp_key + '"}')
