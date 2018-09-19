@@ -46,39 +46,32 @@ The scraped data is stored into a MySQL database ('UltimateGuitarTabs') with the
 Scraped on June 28th, 2018
 
 
-## Installation 
-The UltimateGuitarTabs must first be stored in a mysql database. To do so, ensure you have MySQL installed on your machine. Then you can dump the Progressions/data/UltimateGuitarTabs.sql file into mysql with the following command:
+## Installation and Running
+Open up your terminal and make sure you are in the correct directory:
 ```
-mysqldump -u root -p UltimateGuitarTabs < UltimateGuitarTabs.sql
+cd [Path_To_Progressions]/Flask_app
 ```
 
-Or you can start mysql in your terminal and execute the command:
+The UltimateGuitarTabs must first be stored in a mysql database. To do so, ensure you have MySQL installed on your machine. Then you can dump the Progressions/data/UltimateGuitarTabs.sql file into mysql with the following command:
+```
+./load.sh
+```
+
+Ensure that you have the correct user, password and host set up in the file. Also make sure that this information is correct in the *connect_to_database()* function within db_connect.py
+
+You can also start mysql in your terminal and execute this command to manually load the data:
 ```
 source [full path to UltimateGuitarTabs.sql]
 ```
 
-Next enter the correct directory in the project:
+Now simply run the next bash script
 ```
-cd Progressions/Flask_app
-```
-
-Install python packages
-```
-pip install -r req.txt
+./start.sh
 ```
 
-Run flask app
-```
-python daemon.py
-```
+This will run the flask app *daemon.py* as well as a server at port 8080 for the application itself. NOTE: two terminal tabs will open up so you can easily kill either process with CTRL+C.
 
-Something like this should show up:
-
-* Debug mode: off
-
-* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-
-Finally you can open up the index.html file in your browser or start up your own server to run the app. I run my code on Sublime and usually start up a Sublime Server to run the app.
+Finally you can open up *http://localhost:8080/Flask_app/index.html* to view the app.
 
 
 ## Future Work
