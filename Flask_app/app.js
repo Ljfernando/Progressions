@@ -16,13 +16,10 @@ app.config(function($routeProvider) {
     .when("/song?:id", {
         templateUrl : "views/song.html"
     })
-
     .otherwise({
         templateUrl : "views/main.html"
     });
 });
-
-
 
 app.controller("MainController", ['$scope','$http','$location','NgTableParams', function ($scope,$http,$location,NgTableParams) {
 
@@ -54,9 +51,12 @@ app.controller("SimSongCtrlr", ['$scope','$http','$location','NgTableParams', fu
     // console.log('chords', $scope.chords)
     // console.log('location', $location.$$path)
     var path ='http://localhost:5000' + $location.$$path
+    console.log('path', path)    
     $scope.path = path
     $http.get(path)
         .then(function(response){
+            console.log('in controller')
+            console.log('response', response)
             data=response.data.dataset.slice(1,response.data.dataset.length - 1);
             $scope.song = response.data.dataset[0]
             
@@ -80,6 +80,7 @@ app.controller("SimProgCtrlr", ['$scope','$http','$location','NgTableParams', fu
     // console.log('chords', $scope.chords)
     // console.log('location', $location.$$path)
     var path ='http://localhost:5000' + $location.$$path
+    console.log('path', path)
     $scope.path = path
     chords = $location.$$path.slice(13,$location.$$path.length)
     if(chords.length > 50){
@@ -100,6 +101,10 @@ app.controller("SimProgCtrlr", ['$scope','$http','$location','NgTableParams', fu
     $scope.simSong = function(song){
         $location.path('/sim-by-song?songid='+song);
     }
+    $scope.simChords = function(chords){
+        $scope.chords = chords;
+        $location.path('/sim-by-prog?chords='+chords);
+    }    
 
 }]);
 

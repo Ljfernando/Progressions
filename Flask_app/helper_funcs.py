@@ -2,7 +2,25 @@ import numpy as np
 import pandas as pd
 import math
 import re
-from db_connect import *
+import sqlite3
+
+def create_sqlite_connector(db='UltimateGuitarTabs.db'):
+    con = sqlite3.connect('../data/{}'.format(db))
+    cur = con.cursor()
+    return(con, cur)
+        
+def get_table(cur, tableName):
+    cur.execute("SELECT * FROM "+tableName)
+    
+    return(cur.fetchall())
+
+def exe_query(cur, query):
+    try:
+        cur.execute(query)
+    except:
+        print('Failed to execute query: {}'.format(query))
+
+    return(cur.fetchall())
 
 def fix_accidental(note, accidental):
     notes = np.asarray(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
@@ -188,58 +206,6 @@ def transpose_C(chords, states, song_id):
                {'song_id' : song_id, \
                 'orig_key': comp_key, \
                 'trans_chords': new_chords})
-def get_songs():
-
-    songs = [""]*Chords.shape[0]
-    states = set()
-    for i in range(Chords.shape[0]):
-        states, songs[i] = transpose_C(Chords['Chords'][i], states, Chords['id'][i])
-    states = sorted(list(states))
-    return(states, songs)
-
-def write_clean_songs(songs):
-    db = connect_to_database()
-    cur = db.cursor()
-    
-    delete = "DROP TABLE IF EXISTS Clean_Chords;"
-    cur.execute(delete)
-    
-    create = "CREATE TABLE Clean_Chords (id INT(11) NOT NULL PRIMARY KEY, orig_key TEXT(5), chords TEXT(500));"
-    cur.execute(create)
-    
-    for i in range(len(songs)):
-        
-        song = songs[i]
-        song_id = int(song['song_id'])
-        orig_key = song['orig_key']
-        chords = ','.join(song['trans_chords'])
-        
-        sql_tab = "INSERT INTO Clean_Chords (id,orig_key,chords) \
-        VALUES ('%d','%s','%s')" % \
-        (song_id, orig_key, chords) 
-        
-        try:
-            cur.execute(sql_tab)
-            db.commit()
-        except:
-            db.rollback()
-
-def write_states(states):
-    db = connect_to_database()
-    cur = db.cursor()
-    delete = "DROP TABLE IF EXISTS States;"
-    cur.execute(delete)
-    
-    create = "CREATE TABLE States (states TEXT(500));"
-    cur.execute(create_tabs)
-    
-    sql_tab = "INSERT INTO States (states) VALUES ('%s')" % \
-        ','.join(states)
-    try:
-        cur.execute(sql_tab)
-        db.commit()
-    except:
-        db.rollback()
 
 def create_transition_mat(states, chords):
     states = list(states) # Ensuring states is a list 
@@ -286,7 +252,7 @@ def get_similar_songs(states, song_id, clean_chords, orig_chords):
     sim_songs['Rank'] = pd.Series(range(0,sim_songs.shape[0]))
     return(sim_songs.to_json(orient='records'))
 
-def get_similar_songs2(states, chords, clean_chords, orig_chords):
+def get_similar_songs_user_entry(states, chords, clean_chords, orig_chords):
     states, song = transpose_C(chords, states, 0)
     tm = create_transition_mat(states,song['trans_chords'])
     dist = [0]*clean_chords.shape[0]
@@ -304,15 +270,14 @@ def get_similar_songs2(states, chords, clean_chords, orig_chords):
     sim_songs['Rank'] = pd.Series(range(1,sim_songs.shape[0]+1))
     return(sim_songs.to_json(orient='records'), song['orig_key'])
 
-def get_song_links(song_id):
-    query = 'SELECT song, artist FROM Chords WHERE id=' + song_id
-    song = exe_query(query)
-    name = song[0][0]
-    artist = song[0][1]
+def get_song_links(song_id, chords, tabs_data):
+    print('Pulling song link for ID {}'.format(song_id))
+    curr_song = chords[(chords.Id == int(song_id))][['Song', 'Artist']]
+    song_name = curr_song.iat[0, 0]
+    artist = curr_song.iat[0, 1]
 
-    query = "SELECT id, tab_url FROM Tab_data WHERE song='" + name + "' AND artist='" + artist + "'"
-    Tab_data = pd.DataFrame(list(exe_query(query)), columns=['Id', 'Url'])
-    return(Tab_data.to_json(orient='records'))
+    tab_json = tabs_data[(tabs_data.Song == song_name) & (tabs_data.Artist == artist)][['Id', 'Tab_url']].to_json(orient='records')
+    print('Returning link: {}'.format(tab_json))
+    return(tab_json)
     # links = orig_chords['']
-
 
